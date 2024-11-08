@@ -5,8 +5,6 @@ import (
     "strconv"
     "strings"
 )
-
-
 func calculateSimple(operand1, operand2 float64, operator string) float64 {
     switch operator {
     case "+":
@@ -21,22 +19,32 @@ func calculateSimple(operand1, operand2 float64, operator string) float64 {
         return 0
     }
 }
-
-
 func calculate(expression string) float64 {
-
     expression = strings.ReplaceAll(expression, " ", "")
-
 
     var numbers []float64
     var operators []string
-
     var i int
+
     for i < len(expression) {
         char := string(expression[i])
-
-
-        if char >= "0" && char <= "9" {
+        if char == "(" {
+            balance := 1
+            j := i + 1
+            for j < len(expression) && balance > 0 {
+                if expression[j] == '(' {
+                    balance++
+                } else if expression[j] == ')' {
+                    balance--
+                }
+                j++
+            }
+            num := calculate(expression[i+1 : j-1])
+            numbers = append(numbers, num)
+            i = j
+            continue
+        }
+        if char >= "0" && char <= "9" || char == '.' {
             var numStr string
             for i < len(expression) && (expression[i] >= '0' && expression[i] <= '9' || expression[i] == '.') {
                 numStr += string(expression[i])
@@ -47,9 +55,7 @@ func calculate(expression string) float64 {
             continue
         }
 
-
         if char == "+" || char == "-" || char == "*" || char == "/" {
-            // Обрабатываем приоритет операторов
             for len(operators) > 0 && precedence(char) <= precedence(operators[len(operators)-1]) {
                 applyOperation(&numbers, &operators)
             }
@@ -59,14 +65,12 @@ func calculate(expression string) float64 {
         i++
     }
 
-
     for len(operators) > 0 {
         applyOperation(&numbers, &operators)
     }
 
     return numbers[0]
 }
-
 
 func precedence(op string) int {
     switch op {
@@ -78,6 +82,7 @@ func precedence(op string) int {
         return 0
     }
 }
+
 
 func applyOperation(numbers *[]float64, operators *[]string) {
     if len(*numbers) < 2 || len(*operators) == 0 {
@@ -97,7 +102,7 @@ func applyOperation(numbers *[]float64, operators *[]string) {
 
 var expression string
 func main() {
-    expression := fmt.Scan(&expression)
+    fmt.Scan(&expression)
     result := calculate(expression)
     fmt.Println("Result:", result)
 }
