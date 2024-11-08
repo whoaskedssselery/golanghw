@@ -25,7 +25,7 @@ func calculate(expression string) float64 {
     var numbers []float64
     var operators []string
     var i int
-
+	
     for i < len(expression) {
         char := string(expression[i])
         if char == "(" {
@@ -54,24 +54,19 @@ func calculate(expression string) float64 {
             numbers = append(numbers, num)
             continue
         }
-
         if char == "+" || char == "-" || char == "*" || char == "/" {
             for len(operators) > 0 && precedence(char) <= precedence(operators[len(operators)-1]) {
                 applyOperation(&numbers, &operators)
             }
             operators = append(operators, char)
         }
-
         i++
     }
-
     for len(operators) > 0 {
         applyOperation(&numbers, &operators)
     }
-
     return numbers[0]
 }
-
 func precedence(op string) int {
     switch op {
     case "+", "-":
